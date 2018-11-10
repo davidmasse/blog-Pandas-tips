@@ -10,56 +10,6 @@ import seaborn as sns
 ```
 
 
-### Null Values and Duplicates
-
-This seems to be the fastest way to check for any null values present in a dataframe: `df.isnull().values.any()`.
-
-Here are two quick ways to check for duplicates. Returns False if duplicate rows (same in specified columns, or same in all columns if none specified) are found, and True if no duplicates.
-
-```
-# otherwise useful `keep` argument, not needed here, allows control over which copies of a particular row are kept/dropped
-np.sum(df.duplicated(subset = ['A', 'B', 'C'])) == 0
-df.equals(pd.DataFrame.drop_duplicates(df, subset = ['A', 'B', 'C']))
-```
-
-The `.duplicated` method will also return a useful Pandas series of True at duplicate locations and False elsewhere.  If you do drop some duplicates (use `inplace = True`), and the index isn't meaningful, you could do `df.reset_index(drop=True)` to keep the index numbers what you would assume (i.e. so it won't break when you happen to use `.loc` instead of `.iloc` much later).
-
-
-### Other Checks
-
-Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is the number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows).  Look at `set(df.column)` and `len(set(df.column))` for each column.
-
-
-### `.groupby` (along with `.merge`) for SQL (or dplyr/reshape2 in R) Operations
-
-Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions to pick out qualities of a group, e.g. average length of strings, are defined elsewhere).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
-
-To take this further, iterate through a grouped dataframe:
-
-```
-for name, group in grouped_df:
-    more_complex_function_1(group)
-    more_complex_function_2(name)
-```
-
-Use `.merge` suffixes to keep track of columns when joining a table to itself or a similar table (such as when chaining together periods to assess transitions):
-
-```
-merged = table_1[table_1.month == 'January'].merge(table_2[table_2.month == 'February'], on = 'ID', suffixes = ('L', 'R'))
-```
-
-
-### Apply and Assign
-
-Here's the best way I've found to add derived columns to a dataframe. It's nice to see the lambda function separately. Adding if-else logic is often useful:
-
-```
-# Here 'A' and 'B' are columns in df:
-fn = lambda row: row['A'] / row['B'] if row['B'] != 0 else 0
-df_expanded = df.assign(derived_column = df.apply(fn, axis = 1).values
-```
-
-
 ### Side-by-Side Bar Chart (Seaborn)
 
 Here's a quick side-by-side bar chart to show more than one vertical value (all on the same scale) for each category on the horizontal axis - in case you would like to see various versions of a metric for each group or point in time.
@@ -122,3 +72,53 @@ sorted(cd, key = lambda x: x[1], reverse = True)
 ```
 
 ![cohen](cohen.png)
+
+
+### Null Values and Duplicates
+
+This seems to be the fastest way to check for any null values present in a dataframe: `df.isnull().values.any()`.
+
+Here are two quick ways to check for duplicates. Returns False if duplicate rows (same in specified columns, or same in all columns if none specified) are found, and True if no duplicates.
+
+```
+# otherwise useful `keep` argument, not needed here, allows control over which copies of a particular row are kept/dropped
+np.sum(df.duplicated(subset = ['A', 'B', 'C'])) == 0
+df.equals(pd.DataFrame.drop_duplicates(df, subset = ['A', 'B', 'C']))
+```
+
+The `.duplicated` method will also return a useful Pandas series of True at duplicate locations and False elsewhere.  If you do drop some duplicates (use `inplace = True`), and the index isn't meaningful, you could do `df.reset_index(drop=True)` to keep the index numbers what you would assume (i.e. so it won't break when you happen to use `.loc` instead of `.iloc` much later).
+
+
+### Other Checks
+
+Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is the number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows).  Look at `set(df.column)` and `len(set(df.column))` for each column.
+
+
+### `.groupby` (along with `.merge`) for SQL (or dplyr/reshape2 in R) Operations
+
+Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions to pick out qualities of a group, e.g. average length of strings, are defined elsewhere).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
+
+To take this further, iterate through a grouped dataframe:
+
+```
+for name, group in grouped_df:
+    more_complex_function_1(group)
+    more_complex_function_2(name)
+```
+
+Use `.merge` suffixes to keep track of columns when joining a table to itself or a similar table (such as when chaining together periods to assess transitions):
+
+```
+merged = table_1[table_1.month == 'January'].merge(table_2[table_2.month == 'February'], on = 'ID', suffixes = ('L', 'R'))
+```
+
+
+### Apply and Assign
+
+Here's the best way I've found to add derived columns to a dataframe. It's nice to see the lambda function separately. Adding if-else logic is often useful:
+
+```
+# Here 'A' and 'B' are columns in df:
+fn = lambda row: row['A'] / row['B'] if row['B'] != 0 else 0
+df_expanded = df.assign(derived_column = df.apply(fn, axis = 1).values
+```
