@@ -1,4 +1,6 @@
-## Helpful Pandas and Plotting Patterns
+## Helpful Plotting and Pandas Patterns
+
+Here I just present a few notes to myself about a few things to do upon receiving a dataset.
 
 Some basic Python imports:
 
@@ -10,28 +12,7 @@ import seaborn as sns
 ```
 
 
-### Side-by-Side Bar Chart (Seaborn)
-
-Here's a quick side-by-side bar chart to show more than one vertical value (all on the same scale) for each category on the horizontal axis - in case you would like to see various versions of a metric for each group or point in time.
-
-```
-# nonsense example data:
-d = {'Month': ['March', 'March', 'April', 'April', 'May', 'May'],
-                       'Measurement': [4, 3, 3, 4, 5, 6],
-                       'Type of Measurement': ['A', 'B', 'A', 'B', 'A', 'B']}
-to_chart = pd.DataFrame(d)
-# the line below is convenient to adjust depending on scale and look of plot
-sns.set(font_scale = 1.5)
-fig, ax = plt.subplots(figsize = (10, 7))
-# hue is the argument to know, indicates the two versions of each month's data to show
-sns.barplot(x = 'Month', y = 'Measurement', hue = 'Type of Measurement', data = to_chart)
-plt.show()
-```
-
-![sbs_bar](sbs_bar.png)
-
-
-### Binary Target Histograms and Cohen's d
+### Binary-Target Histograms and Cohen's d
 
 If you have a binary target variable, it's often illustrative to plot a histogram of each feature showing two populations: the feature's values where the target is positive, and its values where the target is negative.  Other conditions may be placed on membership in either group to exclude outliers if desired.
 
@@ -72,6 +53,27 @@ sorted(cd, key = lambda x: x[1], reverse = True)
 ```
 
 ![cohen](cohen.png)
+
+
+### Side-by-Side Bar Chart (Seaborn)
+
+Here's a quick side-by-side bar chart to show more than one vertical value (all on the same scale) for each category on the horizontal axis - in case you would like to see various versions of a metric for each group or point in time.
+
+```
+# nonsense example data:
+d = {'Month': ['March', 'March', 'April', 'April', 'May', 'May'],
+                       'Measurement': [4, 3, 3, 4, 5, 6],
+                       'Type of Measurement': ['A', 'B', 'A', 'B', 'A', 'B']}
+to_chart = pd.DataFrame(d)
+# the line below is convenient to adjust depending on scale and look of plot
+sns.set(font_scale = 1.5)
+fig, ax = plt.subplots(figsize = (10, 7))
+# hue is the argument to know, indicates the two versions of each month's data to show
+sns.barplot(x = 'Month', y = 'Measurement', hue = 'Type of Measurement', data = to_chart)
+plt.show()
+```
+
+![sbs_bar](sbs_bar.png)
 
 
 ### Null Values and Duplicates
