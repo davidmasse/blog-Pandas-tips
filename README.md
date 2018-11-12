@@ -1,6 +1,6 @@
 ## Helpful Plotting and Pandas Patterns
 
-Here I just present a few notes to myself about a few things to do upon receiving a dataset.
+The following are mainly notes to myself about a few things to do upon receiving a dataset.
 
 Some basic Python imports:
 
@@ -17,13 +17,15 @@ import seaborn as sns
 If you have a binary target variable, it's often illustrative to plot a histogram of each feature showing two populations: the feature's values where the target is positive, and its values where the target is negative.  Other conditions may be placed on membership in either group to exclude outliers if desired.
 
 ```
+# made-up data for a dataframe
 d = {'target': [0] * 50 + [1] * 50,
      'B': list(np.random.normal(25, 10, 50)) + list(np.random.normal(75, 10, 50)),
      'C': list(np.random.normal(40, 30, 50)) + list(np.random.normal(66, 20, 50))}
-df = pd.DataFrame(di)
+df = pd.DataFrame(d)
 yes = df[(df['target'] == 1) & (df['B'] < 100)]
 no = df[(df['target'] == 0) & (df['B'] < 100)]
 cols = list(df.columns)
+# we could plot the target column, but it would just show us the proportion of 0's and 1's
 cols.remove('target')
 for name in cols:
     a = yes[name].values
@@ -37,7 +39,7 @@ for name in cols:
 
 ![hists](hists.png)
 
-The visible separation in pairs of distributions can be quantified by Cohen's d, a standardized difference between the means of the positive and negative populations.  Often this is a way to get a preview of the feature importances of decision-tree-based classifiers, which tend to have similar ordering to Cohen's d. This makes sense as higher Cohen's d indicates higher effect size (i.e more separation between positive and negative distributions), which should give the decision tree greater ability to identify which distribution (positive or negative) a particular observation came from.
+The visible separation in pairs of distributions can be quantified by Cohen's d, a standardized difference (dividing by pooled standard deviation) between the means of the positive and negative populations.  Often this is a way to get a preview of the feature importances of decision-tree-based classifiers, which tend to have similar ordering to Cohen's d. This makes sense as higher Cohen's d indicates higher effect size (i.e more separation between positive and negative distributions), which should give the decision tree greater ability to identify which distribution (positive or negative) a particular observation came from.
 
 ```
 cd = []
@@ -80,7 +82,7 @@ plt.show()
 
 This seems to be the fastest way to check for any null values present in a dataframe: `df.isnull().values.any()`.
 
-Here are two quick ways to check for duplicates. Returns False if duplicate rows (same in specified columns, or same in all columns if none specified) are found, and True if no duplicates.
+Here are two quick ways to check for duplicates. Returns False if duplicate rows (same values in specified columns, or same in all columns if none specified) are found, and True if no duplicates.
 
 ```
 # otherwise useful `keep` argument, not needed here, allows control over which copies of a particular row are kept/dropped
@@ -91,14 +93,14 @@ df.equals(pd.DataFrame.drop_duplicates(df, subset = ['A', 'B', 'C']))
 The `.duplicated` method will also return a useful Pandas series of True at duplicate locations and False elsewhere.  If you do drop some duplicates (use `inplace = True`), and the index isn't meaningful, you could do `df.reset_index(drop=True)` to keep the index numbers what you would assume (i.e. so it won't break when you happen to use `.loc` instead of `.iloc` much later).
 
 
-### Other Checks
+### Other Initial Checks
 
-Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is the number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows).  Look at `set(df.column)` and `len(set(df.column))` for each column.
+Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is a judgement-call number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows as the beginning and end may have idiosyncrasies).  Look at `set(df.column)` and `len(set(df.column))` for each column for unique values.
 
 
-### `.groupby` (along with `.merge`) for SQL (or dplyr/reshape2 in R) Operations
+### `.groupby` (along with `.merge`) for SQL Operations (dplyr/reshape2 in R)
 
-Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions to pick out qualities of a group, e.g. average length of strings, are defined elsewhere).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
+Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions, defined elsewhere, pick out qualities of a group, e.g. average length of strings).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
 
 To take this further, iterate through a grouped dataframe:
 
