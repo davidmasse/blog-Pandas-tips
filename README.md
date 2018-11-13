@@ -82,7 +82,7 @@ plt.show()
 
 This seems to be the fastest way to check for any null values present in a dataframe: `df.isnull().values.any()`.
 
-Here are two quick ways to check for duplicates. Returns False if duplicate rows (same values in specified columns, or same in all columns if none specified) are found, and True if no duplicates.
+Here are two quick ways to check for duplicates. Returns False if duplicate rows (same values in specified `subset` columns, or same in all columns if none specified) are found, and True if no duplicates.
 
 ```
 # otherwise useful `keep` argument, not needed here, allows control over which copies of a particular row are kept/dropped
@@ -100,7 +100,7 @@ Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is a jud
 
 ### `.groupby` (along with `.merge`) for SQL Operations (dplyr/reshape2 in R)
 
-Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions, defined elsewhere, pick out qualities of a group, e.g. average length of strings).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
+Start with the likes of `df[['A', 'B', 'C']].groupby('B').count().sum()`.  Tack on `.sort_values('A', ascending = False)` or replace `.count().sum()` with `.agg({'A': lambda_function_1, 'C': lambda_function_2})` (where the lambda functions, defined elsewhere, pick out qualities of a group, e.g. average length of strings).  Instead of columns, specify rows with conditions `df[(df.A > 0) & (df.C > 100)].groupby('B').count().sum()`.
 
 To take this further, iterate through a grouped dataframe:
 
@@ -114,6 +114,7 @@ Use `.merge` suffixes to keep track of columns when joining a table to itself or
 
 ```
 merged = table_1[table_1.month == 'January'].merge(table_2[table_2.month == 'February'], on = 'ID', suffixes = ('L', 'R'))
+# now you can make a column of ratios or percent changes from January to February, i.e. merged.balanceR / merged.balanceL - 1
 ```
 
 
