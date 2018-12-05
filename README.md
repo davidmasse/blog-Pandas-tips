@@ -95,7 +95,7 @@ The `.duplicated` method will also return a useful Pandas series of True at dupl
 
 ### Other Initial Checks
 
-Look at `df.info()`, `df.describe()`, `df.shape`, `df.head(N)` (where N is a judgement-call number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows as the beginning and end may have idiosyncrasies).  Look at `set(df.column)` and `len(set(df.column))` for each column for unique values.
+Look at `df.info()`, `df.describe()`, `df.dtypes`, `df.shape`, `df.head(N)` (where N is a judgement-call number of rows needed to make sense of the dataframe) and `df.iloc[n:m]` (where `n:m` is a slice somewhere a random percentage of the way to the end of the rows as the beginning and end may have idiosyncrasies).  Look at `set(df.column)` and `len(set(df.column))` for each column for unique values.
 
 
 ### `.groupby` (along with `.merge`) for SQL Operations (dplyr/reshape2 in R)
